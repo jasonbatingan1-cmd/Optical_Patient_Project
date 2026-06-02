@@ -1,30 +1,51 @@
 import express from "express";
 import User from "../models/User.js";
+import { verifyToken } from "../middleware/auth.js";
+import { requireRole } from "../middleware/roles.js";
 
 const router = express.Router();
 
+// 🔥 CREATE USER — bootstrap admin allowed
+router.post("/", async (req, res, next) => {
+    console.log("🔥 /users POST HIT");
+    const count = await User.countDocuments();
+
+    // FIRST USER — allow without token
+    if (count === 0) {
+        const user = await User.create(req.body);
+        return res.json(user);
+    }
+
+    // Otherwise require token
+    next();
+});
+
+// 🔥 Now enforce JWT for all remaining routes
+// router.use(verifyToken); --- IGNORE --- (handled in index.js)
+
+// CREATE user (admin only)
+router.post("/", requireRole("admin"), async (req, res) => {
+    const user = await User.create(req.body);
+    res.json(user);
+});
+
 // GET all users
-router.get("/", async (req, res) => {
+router.get("/", requireRole("admin"), async (req, res) => {
     res.json(await User.find());
 });
 
 // GET one user
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireRole("admin"), async (req, res) => {
     res.json(await User.findById(req.params.id));
 });
 
-// CREATE user
-router.post("/", async (req, res) => {
-    res.json(await User.create(req.body));
-});
-
 // UPDATE user
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireRole("admin"), async (req, res) => {
     res.json(await User.findByIdAndUpdate(req.params.id, req.body, { new: true }));
 });
 
 // DELETE user
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("admin"), async (req, res) => {
     await User.findByIdAndDelete(req.params.id);
     res.json({ success: true });
 });

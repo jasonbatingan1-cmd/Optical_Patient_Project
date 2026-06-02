@@ -3,12 +3,18 @@ import bcryptjs from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const router = express.Router();
-const JWT_SECRET = process.env.JWT_SECRET || "devsecret";
+console.log("📌 authRouter loaded");
 
-// REGISTER
+
+const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey123";
+
+// REGISTER (public)
 router.post("/register", async (req, res) => {
-    const { username, email, password } = req.body;
+    console.log("🔥 /auth/register HIT");
+    console.log("JWT_SECRET:", JWT_SECRET);
+
+    const { email, password, role } = req.body;
 
     const exists = await User.findOne({ email });
     if (exists) return res.status(400).json({ message: "Email already in use" });
@@ -16,15 +22,15 @@ router.post("/register", async (req, res) => {
     const hashed = await bcryptjs.hash(password, 10);
 
     const user = await User.create({
-        username,
         email,
         password: hashed,
+        role: role || "user"
     });
 
     res.json(user);
 });
 
-// LOGIN
+// LOGIN (public)
 router.post("/login", async (req, res) => {
     const { email, password } = req.body;
 
@@ -39,7 +45,7 @@ router.post("/login", async (req, res) => {
     res.json({ token, user });
 });
 
-// CHECK SESSION
+// CHECK SESSION (public)
 router.get("/me", async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.json(null);
@@ -53,7 +59,7 @@ router.get("/me", async (req, res) => {
     }
 });
 
-// LOGOUT (client just deletes token)
+// LOGOUT (public)
 router.post("/logout", (req, res) => {
     res.json({ success: true });
 });

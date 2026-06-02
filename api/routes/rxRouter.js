@@ -1,31 +1,36 @@
 import express from "express";
 import Rx from "../models/Prescription.js";
+import { verifyToken } from "../middleware/auth.js";
+import { requireRole } from "../middleware/roles.js";
 
 const router = express.Router();
 
+// protect routes with authentication middleware
+router.use(verifyToken);
+
 // GET all Rx for a patient
-router.get("/patient/:patientId", async (req, res) => {
+router.get("/patient/:patientId", requireRole("admin", "optician"), async (req, res) => {
     const list = await Rx.find({ patient: req.params.patientId });
     res.json(list);
 });
 
 // GET single Rx
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireRole("admin", "optician"), async (req, res) => {
     res.json(await Rx.findById(req.params.id));
 });
 
 // CREATE Rx
-router.post("/", async (req, res) => {
+router.post("/", requireRole("admin", "optician"), async (req, res) => {
     res.json(await Rx.create(req.body));
 });
 
 // UPDATE Rx
-router.put("/:id", async (req, res) => {
+router.put("/:id", requireRole("admin", "optician"), async (req, res) => {
     res.json(await Rx.findByIdAndUpdate(req.params.id, req.body, { new: true }));
 });
 
 // DELETE Rx
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("admin", "optician"), async (req, res) => {
     await Rx.findByIdAndDelete(req.params.id);
     res.json({ success: true });
 });
