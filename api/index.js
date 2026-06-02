@@ -9,30 +9,47 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect to local MongoDB
+// 🔍 GLOBAL REQUEST LOGGER
+app.use((req, res, next) => {
+    console.log(`➡️  Incoming: ${req.method} ${req.originalUrl}`);
+    next();
+});
+
+console.log("Server listening on:", process.env.PORT);
+
+
+// Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("✅ Connected to local MongoDB"))
+    .then(() => console.log("✅ Connected to MongoDB"))
     .catch(err => console.error("❌ MongoDB connection error:", err));
 
-// Your routes here
+// ROUTES
+import authRoutes from "./routes/authRouter.js";
+import userRoutes from "./routes/userRouter.js";
 import patientRoutes from "./routes/patientRouter.js";
 import frameRoutes from "./routes/frameRouter.js";
 import lensRoutes from "./routes/lensRouter.js";
 import treatmentRoutes from "./routes/treatmentRouter.js";
 import coatingRoutes from "./routes/coatRouter.js";
-import userRoutes from "./routes/userRouter.js";
-import authRoutes from "./routes/authRouter.js";
 import rxRoutes from "./routes/rxRouter.js";
 
-// mount routes
-app.use("/patients", patientRoutes);
-app.use("/frames", frameRoutes);
-app.use("/lenses", lensRoutes);
-app.use("/treatments", treatmentRoutes);
-app.use("/coatings", coatingRoutes);
-app.use("/users", userRoutes);
+import { verifyToken } from "./middleware/auth.js";
+import { requireRole } from "./middleware/roles.js";
+
+// 🔥 LOG ROUTER MOUNTS
+console.log("📌 Mounting /auth");
 app.use("/auth", authRoutes);
-app.use("/rx", rxRoutes);
+
+console.log("📌 Mounting /users");
+app.use("/users", userRoutes);
+
+console.log("📌 Mounting protected routes");
+app.use("/patients", verifyToken, patientRoutes);
+app.use("/frames", verifyToken, frameRoutes);
+app.use("/lenses", verifyToken, lensRoutes);
+app.use("/treatments", verifyToken, treatmentRoutes);
+app.use("/coatings", verifyToken, coatingRoutes);
+app.use("/rx", verifyToken, requireRole("admin", "optician"), rxRoutes);
 
 app.listen(process.env.PORT, () =>
     console.log(`🚀 API running on port ${process.env.PORT}`)
