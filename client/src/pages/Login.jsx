@@ -1,6 +1,15 @@
 import { useState } from "react";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 export default function LoginPage() {
+    const { isAuthenticated } = useAuth();
+
+    // Redirect if already logged in
+    if (isAuthenticated) {
+        return <Navigate to="/dashboard" replace />;
+    }
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -23,11 +32,9 @@ export default function LoginPage() {
                 return;
             }
 
-            // Save token for authenticated requests
             localStorage.setItem("token", data.token);
 
-            // Redirect to dashboard or home
-            window.location.href = "/";
+            window.location.href = "/dashboard";
         } catch (err) {
             setError("Server error");
         }

@@ -1,11 +1,7 @@
 import express from "express";
 import Lens from "../models/Lens.js";
-import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
-
-// protect routes with authentication middleware
-router.use(verifyToken);
 
 router.get("/", async (req, res) => {
     res.json(await Lens.find());

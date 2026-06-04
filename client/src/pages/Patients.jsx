@@ -16,7 +16,7 @@ export default function Patients() {
     async function handleDelete(id) {
         if (!confirm("Delete this patient?")) return;
         await apiDelete(`/patients/${id}`);
-        // reload list
+
         const data = await apiGet("/patients");
         setPatients(data);
     }
@@ -27,12 +27,14 @@ export default function Patients() {
 
             <Link to="/patients/new">➕ Add Patient</Link>
 
-            <table border="1" cellPadding="8" style={{ marginTop: "20px" }}>
+            <table border="1" cellPadding="8" style={{ marginTop: "20px", width: "100%" }}>
                 <thead>
                     <tr>
                         <th>Name</th>
                         <th>DOB</th>
                         <th>Phone</th>
+                        <th>Email</th>
+                        <th>Notes</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -43,6 +45,8 @@ export default function Patients() {
                             <td>{p.firstName} {p.lastName}</td>
                             <td>{p.dob}</td>
                             <td>{p.phone}</td>
+                            <td>{p.email}</td>
+                            <td>{p.notes}</td>
                             <td>
                                 <Link to={`/patients/${p._id}/edit`}>Edit</Link> |{" "}
                                 <Link to={`/patients/${p._id}/rx`}>Enter Rx</Link> |{" "}

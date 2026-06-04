@@ -1,6 +1,5 @@
 import express from "express";
 import User from "../models/User.js";
-import { verifyToken } from "../middleware/auth.js";
 import { requireRole } from "../middleware/roles.js";
 
 const router = express.Router();
@@ -19,9 +18,6 @@ router.post("/", async (req, res, next) => {
     // Otherwise require token
     next();
 });
-
-// 🔥 Now enforce JWT for all remaining routes
-// router.use(verifyToken); --- IGNORE --- (handled in index.js)
 
 // CREATE user (admin only)
 router.post("/", requireRole("admin"), async (req, res) => {

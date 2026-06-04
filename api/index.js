@@ -1,12 +1,19 @@
-import express from "express";
+import dotenv from "dotenv";
+dotenv.config();import express from "express";
+
 import mongoose from "mongoose";
 import cors from "cors";
-import dotenv from "dotenv";
 
-dotenv.config();
+console.log("JWT_SECRET:", process.env.JWT_SECRET);
 
 const app = express();
-app.use(cors());
+// CORS configuration to allow requests from the React frontend
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 app.use(express.json());
 
 // 🔍 GLOBAL REQUEST LOGGER
@@ -36,20 +43,18 @@ import rxRoutes from "./routes/rxRouter.js";
 import { verifyToken } from "./middleware/auth.js";
 import { requireRole } from "./middleware/roles.js";
 
-// 🔥 LOG ROUTER MOUNTS
 console.log("📌 Mounting /auth");
 app.use("/auth", authRoutes);
 
-console.log("📌 Mounting /users");
-app.use("/users", userRoutes);
-
 console.log("📌 Mounting protected routes");
+app.use("/users", verifyToken, requireRole("admin"), userRoutes);
 app.use("/patients", verifyToken, patientRoutes);
 app.use("/frames", verifyToken, frameRoutes);
 app.use("/lenses", verifyToken, lensRoutes);
-app.use("/treatments", verifyToken, treatmentRoutes);
 app.use("/coatings", verifyToken, coatingRoutes);
+app.use("/treatments", verifyToken, treatmentRoutes);
 app.use("/rx", verifyToken, requireRole("admin", "optician"), rxRoutes);
+
 
 app.listen(process.env.PORT, () =>
     console.log(`🚀 API running on port ${process.env.PORT}`)

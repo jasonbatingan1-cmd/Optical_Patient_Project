@@ -1,58 +1,36 @@
-const API_BASE = "http://localhost:3000/api";
+const API_BASE = "http://localhost:3000";
 
-export async function apiGet(url) {
+function getAuthHeader() {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
-    const res = await fetch(API_BASE + url, {
+export async function apiGet(path) {
+    const res = await fetch(API_BASE + path, {
         headers: {
-            "Authorization": `Bearer ${token}`, // get JWT token from localStorage and include in auth header
-            "Role": `${role}` // get user role from localStorage and include in auth header
+            ...getAuthHeader()
         }
     });
-
     return res.json();
 }
 
-
-export async function apiPost(path, data) {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    const res = await fetch(`${API_BASE}${path}`, {
+export async function apiPost(path, body) {
+    const res = await fetch(API_BASE + path, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // get JWT token from localStorage and include in auth header
-            "Role": `${role}` // get user role from localStorage and include in auth header
+            ...getAuthHeader()
         },
-        body: JSON.stringify(data),
-    });
-    return res.json();
-}
-
-export async function apiPut(path, data) {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    const res = await fetch(`${API_BASE}${path}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`, // get JWT token from localStorage and include in auth header
-            "Role": `${role}` // get user role from localStorage and include in auth header
-        },
-        body: JSON.stringify(data),
+        body: JSON.stringify(body)
     });
     return res.json();
 }
 
 export async function apiDelete(path) {
-    const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role");
-    const res = await fetch(`${API_BASE}${path}`, {
+    const res = await fetch(API_BASE + path, {
         method: "DELETE",
         headers: {
-            "Authorization": `Bearer ${token}`, // get JWT token from localStorage and include in auth header
-            "Role": `${role}` // get user role from localStorage and include in auth header
+            ...getAuthHeader()
         }
     });
     return res.json();

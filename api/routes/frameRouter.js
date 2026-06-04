@@ -1,11 +1,7 @@
 import express from "express";
 import Frame from "../models/Frame.js";
-import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
-
-// protect routes with authentication middleware
-router.use(verifyToken);
 
 router.get("/", async (req, res) => {
     res.json(await Frame.find());

@@ -1,12 +1,8 @@
 import express from "express";
 import Rx from "../models/Prescription.js";
-import { verifyToken } from "../middleware/auth.js";
 import { requireRole } from "../middleware/roles.js";
 
 const router = express.Router();
-
-// protect routes with authentication middleware
-router.use(verifyToken);
 
 // GET all Rx for a patient
 router.get("/patient/:patientId", requireRole("admin", "optician"), async (req, res) => {

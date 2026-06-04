@@ -1,11 +1,7 @@
 import express from "express";
 import Patient from "../models/Patient.js";
-import { verifyToken } from "../middleware/auth.js";
 
 const router = express.Router();
-
-// protect routes with authentication middleware
-router.use(verifyToken);
 
 // GET all patients
 router.get("/", async (req, res) => {
