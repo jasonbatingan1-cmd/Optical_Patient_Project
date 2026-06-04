@@ -1,13 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { apiPost } from "../api";
+import { apiGet, apiPost } from "../api";
+import { useAuth } from "../context/AuthContext.jsx";
+import { can } from "../roles.js";
 
 export default function EnterRx() {
     const { id } = useParams(); // patient ID
     const nav = useNavigate();
+    const { user } = useAuth();
+
+    // Role protection
+    if (!can(user, "EDIT_RX")) {
+        return (
+            <div style={{ padding: "2rem" }}>
+                <h2>🚫 Access Denied</h2>
+                <p>You do not have permission to enter prescriptions.</p>
+            </div>
+        );
+    }
+
+    const [patient, setPatient] = useState(null);
 
     const [form, setForm] = useState({
-        // OD (Right Eye)
+        // OD
         od_sph: "",
         od_cyl: "",
         od_axis: "",
@@ -15,7 +30,7 @@ export default function EnterRx() {
         od_prism_h: "",
         od_prism_v: "",
 
-        // OS (Left Eye)
+        // OS
         os_sph: "",
         os_cyl: "",
         os_axis: "",
@@ -28,11 +43,20 @@ export default function EnterRx() {
         pd_od: "",
         pd_os: "",
 
-        // Lens options
+        // Lens Options
         lensType: "",
         treatment: "",
         coating: "",
     });
+
+    useEffect(() => {
+        loadPatient();
+    }, []);
+
+    async function loadPatient() {
+        const data = await apiGet(`/patients/${id}`);
+        setPatient(data);
+    }
 
     function update(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -40,14 +64,28 @@ export default function EnterRx() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        await apiPost(`/patients/${id}/rx`, form);
-        nav(`/patients/${id}/edit`);
+        await apiPost(`/rx/${id}`, form);
+
+        // Redirect to /patients after saving
+        nav("/patients");
     }
+
+    if (!patient) return <p>Loading...</p>;
 
     return (
         <div style={{ padding: "2rem" }}>
+            {/* Back Button */}
+            <button
+                onClick={() => nav("/patients")}
+                style={{ marginBottom: "1rem" }}
+            >
+                ← Back to Patients
+            </button>
+
             <h1>Enter Prescription (Rx)</h1>
-            <p>Patient ID: {id}</p>
+            <p>
+                Patient: <strong>{patient.firstName} {patient.lastName}</strong>
+            </p>
 
             <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
 

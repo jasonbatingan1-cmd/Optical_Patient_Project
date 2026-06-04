@@ -1,37 +1,56 @@
-const API_BASE = "http://localhost:3000";
-
-function getAuthHeader() {
-    const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-}
+const API_URL = "http://localhost:3000";
 
 export async function apiGet(path) {
-    const res = await fetch(API_BASE + path, {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(API_URL + path, {
+        credentials: "include",
         headers: {
-            ...getAuthHeader()
+            "Authorization": token ? `Bearer ${token}` : ""
         }
     });
     return res.json();
 }
 
 export async function apiPost(path, body) {
-    const res = await fetch(API_BASE + path, {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(API_URL + path, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            ...getAuthHeader()
+            "Authorization": token ? `Bearer ${token}` : ""
         },
+        credentials: "include",
+        body: JSON.stringify(body)
+    });
+    return res.json();
+}
+
+export async function apiPut(path, body) {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(API_URL + path, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": token ? `Bearer ${token}` : ""
+        },
+        credentials: "include",
         body: JSON.stringify(body)
     });
     return res.json();
 }
 
 export async function apiDelete(path) {
-    const res = await fetch(API_BASE + path, {
+    const token = localStorage.getItem("token");
+
+    const res = await fetch(API_URL + path, {
         method: "DELETE",
         headers: {
-            ...getAuthHeader()
-        }
+            "Authorization": token ? `Bearer ${token}` : ""
+        },
+        credentials: "include"
     });
     return res.json();
 }

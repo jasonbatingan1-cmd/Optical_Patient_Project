@@ -10,6 +10,9 @@ import Patients from "./pages/Patients.jsx";
 import Coatings from "./pages/Coatings.jsx";
 import Frames from "./pages/Frames.jsx";
 import Lenses from "./pages/Lenses.jsx";
+import EnterRx from "./pages/EnterRx.jsx";
+import ViewRx from "./pages/ViewRx.jsx";
+import EditFrame from "./pages/EditFrame.jsx";
 
 export default function App() {
   return (
@@ -39,6 +42,7 @@ export default function App() {
           }
         />
 
+
         <Route
           path="/patients"
           element={
@@ -57,6 +61,14 @@ export default function App() {
           }
         />
         <Route
+          path="/frames/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditFrame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/frames"
           element={
             <ProtectedRoute>
@@ -64,6 +76,7 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+        
         <Route
           path="/lenses"
           element={
@@ -77,6 +90,22 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Lenses />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patients/:id/rx"
+          element={
+            <ProtectedRoute permission="EDIT_RX">
+              <EnterRx />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patients/:id/rx/view"
+          element={
+            <ProtectedRoute permission="VIEW_RX">
+              <ViewRx />
             </ProtectedRoute>
           }
         />

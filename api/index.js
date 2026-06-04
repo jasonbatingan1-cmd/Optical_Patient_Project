@@ -53,7 +53,7 @@ app.use("/frames", verifyToken, frameRoutes);
 app.use("/lenses", verifyToken, lensRoutes);
 app.use("/coatings", verifyToken, coatingRoutes);
 app.use("/treatments", verifyToken, treatmentRoutes);
-app.use("/rx", verifyToken, requireRole("admin", "optician"), rxRoutes);
+app.use("/rx", verifyToken, rxRoutes);
 
 
 app.listen(process.env.PORT, () =>

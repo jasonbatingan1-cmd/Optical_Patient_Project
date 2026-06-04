@@ -38,6 +38,9 @@ export default function LoginPage() {
         } catch (err) {
             setError("Server error");
         }
+
+        nav("/dashboard");
+
     };
 
     return (

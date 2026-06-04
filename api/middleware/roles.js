@@ -4,16 +4,18 @@ import User from "../models/User.js";
 const JWT_SECRET = process.env.JWT_SECRET || "devsecret";
 
 export function requireRole(...allowedRoles) {
-    return async (req, res, next) => {
-        console.log("🛑 requireRole triggered for:", req.originalUrl);
+    return (req, res, next) => {
+        console.log("User role:", req.user.role);
+        console.log("Allowed roles:", allowedRoles);
 
-        const header = req.headers.authorization;
-        if (!header) {
-            console.log("❌ No token for role check");
-            return res.status(403).json({ message: "Access denied" });
+        if (!req.user || !req.user.role) {
+            return res.status(403).json({ message: "Forbidden: no role" });
+        }
+
+        if (!allowedRoles.includes(req.user.role)) {
+            return res.status(403).json({ message: "Forbidden: insufficient role" });
         }
 
         next();
     };
 }
-
