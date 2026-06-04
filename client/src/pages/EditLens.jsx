@@ -8,12 +8,13 @@ export default function EditLens() {
     const [form, setForm] = useState(null);
 
     useEffect(() => {
-        async function load() {
-            const data = await apiGet(`/lenses/${id}`);
-            setForm(data);
-        }
         load();
-    }, [id]);
+    }, []);
+
+    async function load() {
+        const data = await apiGet(`/lenses/${id}`);
+        setForm(data);
+    }
 
     function update(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -33,10 +34,9 @@ export default function EditLens() {
 
             <form onSubmit={handleSubmit}>
                 <input name="brand" value={form.brand} onChange={update} />
+                <input name="type" value={form.type} onChange={update} />
                 <input name="material" value={form.material} onChange={update} />
                 <input name="index" value={form.index} onChange={update} />
-                <input name="type" value={form.type} onChange={update} />
-                <input name="coating" value={form.coating} onChange={update} />
                 <input name="price" value={form.price} onChange={update} />
 
                 <button type="submit" style={{ marginTop: "1rem" }}>

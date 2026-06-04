@@ -49,8 +49,15 @@ export default function Patients() {
                             <td>{p.notes}</td>
                             <td>
                                 <Link to={`/patients/${p._id}/edit`}>Edit</Link> |{" "}
-                                <Link to={`/patients/${p._id}/rx`}>Enter Rx</Link> |{" "}
-                                <Link to={`/patients/${p._id}/rx/view`}>View Rx</Link> |{" "}
+
+                                <Link to={`/rx/${p._id}/edit`}>
+                                    <button>Edit Rx</button>
+                                </Link>{" "}
+
+                                <Link to={`/rx/${p._id}`}>
+                                    <button>View Rx</button>
+                                </Link>{" "}
+
                                 <button onClick={() => handleDelete(p._id)}>Delete</button>
                             </td>
                         </tr>

@@ -1,38 +1,53 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./context/ProtectedRoute.jsx";
 import RoleRoute from "./context/RoleRoute.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
+
+// NAVBAR
+import NavBar from "./components/NavBar.jsx";
+
+// AUTH
 import LoginPage from "./pages/Login.jsx";
 import Home from "./pages/Home.jsx";
+
+// DASHBOARD
+import Dashboard from "./pages/Dashboard.jsx";
+
+// ADMIN
 import AdminPanel from "./pages/AdminPanel.jsx";
-import NavBar from "./components/NavBar.jsx";
+
+// PATIENTS
 import Patients from "./pages/Patients.jsx";
-import Coatings from "./pages/Coatings.jsx";
+import AddPatient from "./pages/AddPatient.jsx";
+import EditPatient from "./pages/EditPatient.jsx";
+
+// FRAMES
 import Frames from "./pages/Frames.jsx";
-import Lenses from "./pages/Lenses.jsx";
-import EnterRx from "./pages/EnterRx.jsx";
-import ViewRx from "./pages/ViewRx.jsx";
+import AddFrame from "./pages/AddFrame.jsx";
 import EditFrame from "./pages/EditFrame.jsx";
+
+// LENSES
+import Lenses from "./pages/Lenses.jsx";
+import AddLens from "./pages/AddLens.jsx";
+import EditLens from "./pages/EditLens.jsx";
+
+// RX
+import ViewRx from "./pages/ViewRx.jsx";
+import EnterRx from "./pages/EnterRx.jsx";
 
 export default function App() {
   return (
     <BrowserRouter>
+
+      {/* NAVBAR ALWAYS VISIBLE WHEN LOGGED IN */}
       <NavBar />
 
       <Routes>
+
+        {/* PUBLIC ROUTES */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<LoginPage />} />
 
-        {/* Admin only route */}
-        <Route
-          path="/admin"
-          element={
-            <RoleRoute allowedRoles={["admin"]}>
-              <AdminPanel />
-            </RoleRoute>
-          }
-        />
-
+        {/* DASHBOARD */}
         <Route
           path="/dashboard"
           element={
@@ -42,7 +57,17 @@ export default function App() {
           }
         />
 
+        {/* ADMIN PANEL (ADMIN ONLY) */}
+        <Route
+          path="/admin"
+          element={
+            <RoleRoute allowedRoles={["admin"]}>
+              <AdminPanel />
+            </RoleRoute>
+          }
+        />
 
+        {/* PATIENTS */}
         <Route
           path="/patients"
           element={
@@ -51,23 +76,26 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        
+
         <Route
-          path="/coatings"
+          path="/patients/new"
           element={
             <ProtectedRoute>
-              <Coatings />
+              <AddPatient />
             </ProtectedRoute>
           }
         />
+
         <Route
-          path="/frames/:id/edit"
+          path="/patients/:id/edit"
           element={
             <ProtectedRoute>
-              <EditFrame />
+              <EditPatient />
             </ProtectedRoute>
           }
         />
+
+        {/* FRAMES */}
         <Route
           path="/frames"
           element={
@@ -76,7 +104,26 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        
+
+        <Route
+          path="/frames/new"
+          element={
+            <ProtectedRoute>
+              <AddFrame />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/frames/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EditFrame />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* LENSES */}
         <Route
           path="/lenses"
           element={
@@ -85,27 +132,39 @@ export default function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
-          path="/rx"
+          path="/lenses/new"
           element={
             <ProtectedRoute>
-              <Lenses />
+              <AddLens />
             </ProtectedRoute>
           }
         />
+
         <Route
-          path="/patients/:id/rx"
+          path="/lenses/:id/edit"
           element={
-            <ProtectedRoute permission="EDIT_RX">
-              <EnterRx />
+            <ProtectedRoute>
+              <EditLens />
             </ProtectedRoute>
           }
         />
+
+        {/* RX */}
         <Route
-          path="/patients/:id/rx/view"
+          path="/rx/:id"
           element={
-            <ProtectedRoute permission="VIEW_RX">
+            <ProtectedRoute>
               <ViewRx />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rx/:id/edit"
+          element={
+            <ProtectedRoute>
+              <EnterRx />
             </ProtectedRoute>
           }
         />

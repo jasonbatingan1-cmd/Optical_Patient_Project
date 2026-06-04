@@ -10,7 +10,7 @@ export default function AddFrame() {
         model: "",
         color: "",
         size: "",
-        price: "",
+        price: ""
     });
 
     function update(e) {

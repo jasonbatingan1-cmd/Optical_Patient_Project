@@ -7,11 +7,10 @@ export default function AddLens() {
 
     const [form, setForm] = useState({
         brand: "",
+        type: "",
         material: "",
         index: "",
-        type: "",
-        coating: "",
-        price: "",
+        price: ""
     });
 
     function update(e) {
@@ -30,10 +29,9 @@ export default function AddLens() {
 
             <form onSubmit={handleSubmit}>
                 <input name="brand" placeholder="Brand" onChange={update} />
-                <input name="material" placeholder="Material (Poly, Trivex, Hi-Index)" onChange={update} />
-                <input name="index" placeholder="Index (1.50, 1.59, 1.67, 1.74)" onChange={update} />
-                <input name="type" placeholder="Type (SV, BF, PAL)" onChange={update} />
-                <input name="coating" placeholder="Coating (AR, Blue Light, UV)" onChange={update} />
+                <input name="type" placeholder="Type" onChange={update} />
+                <input name="material" placeholder="Material" onChange={update} />
+                <input name="index" placeholder="Index" onChange={update} />
                 <input name="price" placeholder="Price" onChange={update} />
 
                 <button type="submit" style={{ marginTop: "1rem" }}>

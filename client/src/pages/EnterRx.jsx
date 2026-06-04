@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { apiGet, apiPost } from "../api";
+import { apiGet, apiPost, apiPut } from "../api";
 import { useAuth } from "../context/AuthContext.jsx";
 import { can } from "../roles.js";
 
@@ -20,9 +20,9 @@ export default function EnterRx() {
     }
 
     const [patient, setPatient] = useState(null);
+    const [existingRx, setExistingRx] = useState(null);
 
     const [form, setForm] = useState({
-        // OD
         od_sph: "",
         od_cyl: "",
         od_axis: "",
@@ -30,7 +30,6 @@ export default function EnterRx() {
         od_prism_h: "",
         od_prism_v: "",
 
-        // OS
         os_sph: "",
         os_cyl: "",
         os_axis: "",
@@ -38,24 +37,36 @@ export default function EnterRx() {
         os_prism_h: "",
         os_prism_v: "",
 
-        // PD
         pd_single: "",
         pd_od: "",
         pd_os: "",
 
-        // Lens Options
         lensType: "",
         treatment: "",
         coating: "",
     });
 
     useEffect(() => {
-        loadPatient();
+        loadData();
     }, []);
 
-    async function loadPatient() {
-        const data = await apiGet(`/patients/${id}`);
-        setPatient(data);
+    async function loadData() {
+        // Load patient
+        const p = await apiGet(`/patients/${id}`);
+        setPatient(p);
+
+        // Load existing Rx (if any)
+        const r = await apiGet(`/rx/patient/${id}`);
+
+        if (r) {
+            setExistingRx(r);
+
+            // Pre-fill form with existing Rx values
+            setForm({
+                ...form,
+                ...r, // this merges all matching fields
+            });
+        }
     }
 
     function update(e) {
@@ -64,31 +75,32 @@ export default function EnterRx() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        await apiPost(`/rx/${id}`, form);
 
-        // Redirect to /patients after saving
-        nav("/patients");
+        if (existingRx) {
+            // Update existing Rx
+            await apiPut(`/rx/${id}/edit`, form);
+        } else {
+            // Create new Rx
+            await apiPost(`/rx/${id}`, form);
+        }
+
+        nav(`/rx/${id}`);
     }
 
     if (!patient) return <p>Loading...</p>;
 
     return (
         <div style={{ padding: "2rem" }}>
-            {/* Back Button */}
-            <button
-                onClick={() => nav("/patients")}
-                style={{ marginBottom: "1rem" }}
-            >
+            <button onClick={() => nav("/patients")} style={{ marginBottom: "1rem" }}>
                 ← Back to Patients
             </button>
 
-            <h1>Enter Prescription (Rx)</h1>
+            <h1>{existingRx ? "Edit Prescription" : "Enter Prescription"}</h1>
             <p>
                 Patient: <strong>{patient.firstName} {patient.lastName}</strong>
             </p>
 
             <form onSubmit={handleSubmit} style={{ marginTop: "1rem" }}>
-
                 {/* OD */}
                 <h2>Right Eye (OD)</h2>
                 <div>
@@ -122,13 +134,13 @@ export default function EnterRx() {
                 {/* Lens Options */}
                 <h2 style={{ marginTop: "1rem" }}>Lens Options</h2>
                 <div>
-                    <input name="lensType" placeholder="Lens Type (SV, BF, PAL)" value={form.lensType} onChange={update} />
-                    <input name="treatment" placeholder="Treatment (AR, Blue Light, etc.)" value={form.treatment} onChange={update} />
-                    <input name="coating" placeholder="Coating (Scratch, UV, etc.)" value={form.coating} onChange={update} />
+                    <input name="lensType" placeholder="Lens Type" value={form.lensType} onChange={update} />
+                    <input name="treatment" placeholder="Treatment" value={form.treatment} onChange={update} />
+                    <input name="coating" placeholder="Coating" value={form.coating} onChange={update} />
                 </div>
 
                 <button type="submit" style={{ marginTop: "1.5rem" }}>
-                    Save Prescription
+                    {existingRx ? "Update Prescription" : "Save Prescription"}
                 </button>
             </form>
         </div>
