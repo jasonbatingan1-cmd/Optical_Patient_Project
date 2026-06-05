@@ -1,5 +1,6 @@
 import express from "express";
 import Patient from "../models/Patient.js";
+import { requireRole } from "../middleware/roles.js";
 
 const router = express.Router();
 
@@ -16,7 +17,7 @@ router.get("/", async (req, res) => {
 });
 
 // UPDATE patient
-router.put("/:id/edit", async (req, res) => {
+router.put("/:id/edit", requireRole("EDIT_RX"), async (req, res) => {
     const updated = await Patient.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -26,7 +27,7 @@ router.put("/:id/edit", async (req, res) => {
 });
 
 // DELETE patient
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireRole("EDIT_RX"), async (req, res) => {
     await Patient.findByIdAndDelete(req.params.id);
     res.json({ success: true });
 });

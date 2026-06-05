@@ -1,11 +1,24 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiGet, apiPut } from "../api";
+import { useAuth } from "../context/AuthContext.jsx";
+import { can } from "../roles.js";
 
 export default function EditPatient() {
     const { id } = useParams();
     const nav = useNavigate();
     const [form, setForm] = useState(null);
+    const { user } = useAuth();
+
+    // Role protection
+    if (!can(user, "EDIT_RX")) {
+        return (
+            <div style={{ padding: "2rem" }}>
+                <h2>🚫 Access Denied</h2>
+                <p>You do not have permission to enter prescriptions.</p>
+            </div>
+        );
+    }
 
     useEffect(() => {
         load();
