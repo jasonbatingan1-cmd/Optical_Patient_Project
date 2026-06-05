@@ -22,7 +22,7 @@ export default function EditPatient() {
 
     async function handleSubmit(e) {
         e.preventDefault();
-        await apiPut(`/patients/${id}`, form);
+        await apiPut(`/patients/${id}/edit`, form);
         nav("/patients");
     }
 

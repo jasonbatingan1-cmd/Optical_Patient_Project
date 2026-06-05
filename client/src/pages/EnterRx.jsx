@@ -78,7 +78,7 @@ export default function EnterRx() {
 
         if (existingRx) {
             // Update existing Rx
-            await apiPut(`/rx/${id}/edit`, form);
+            await apiPut(`/rx/${existingRx._id}`, form);
         } else {
             // Create new Rx
             await apiPost(`/rx/${id}`, form);

@@ -76,7 +76,7 @@ export default function ViewRx() {
                     </ul>
 
                     {can(user, "EDIT_RX") && (
-                        <Link to={`/patients/${id}/rx`}>
+                        <Link to={`/rx/${id}/edit`}>
                             <button style={{ marginTop: "1rem" }}>Edit Prescription</button>
                         </Link>
                     )}
