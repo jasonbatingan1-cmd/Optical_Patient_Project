@@ -19,6 +19,10 @@ export default function EnterRx() {
         );
     }
 
+    // Dropdown data
+    const [lenses, setLenses] = useState([]);
+    const [coatings, setCoatings] = useState([]);
+
     const [patient, setPatient] = useState(null);
     const [existingRx, setExistingRx] = useState(null);
 
@@ -51,21 +55,26 @@ export default function EnterRx() {
     }, []);
 
     async function loadData() {
-        // Load patient
-        const p = await apiGet(`/patients/${id}`);
-        setPatient(p);
+        try {
+            // Load patient
+            const p = await apiGet(`/patients/${id}`);
+            setPatient(p);
 
-        // Load existing Rx (if any)
-        const r = await apiGet(`/rx/patient/${id}`);
+            // Load existing Rx
+            const r = await apiGet(`/rx/patient/${id}`);
+            if (r) {
+                setExistingRx(r);
+                setForm(prev => ({ ...prev, ...r }));
+            }
 
-        if (r) {
-            setExistingRx(r);
+            // Load dropdown data
+            const lensList = await apiGet("/lenses");
+            const coatingList = await apiGet("/coatings");
 
-            // Pre-fill form with existing Rx values
-            setForm({
-                ...form,
-                ...r, // this merges all matching fields
-            });
+            setLenses(lensList);
+            setCoatings(coatingList);
+        } catch (err) {
+            console.error("Error loading RX data:", err);
         }
     }
 
@@ -76,15 +85,18 @@ export default function EnterRx() {
     async function handleSubmit(e) {
         e.preventDefault();
 
-        if (existingRx) {
-            // Update existing Rx
-            await apiPut(`/rx/${existingRx._id}`, form);
-        } else {
-            // Create new Rx
-            await apiPost(`/rx/${id}`, form);
-        }
+        try {
+            if (existingRx) {
+                await apiPut(`/rx/${existingRx._id}`, form);
+            } else {
+                await apiPost(`/rx/${id}`, form);
+            }
 
-        nav(`/rx/${id}`);
+            nav(`/rx/${id}`);
+        } catch (err) {
+            console.error("RX save error:", err);
+            alert("Failed to save prescription");
+        }
     }
 
     if (!patient) return <p>Loading...</p>;
@@ -134,9 +146,33 @@ export default function EnterRx() {
                 {/* Lens Options */}
                 <h2 style={{ marginTop: "1rem" }}>Lens Options</h2>
                 <div>
-                    <input name="lensType" placeholder="Lens Type" value={form.lensType} onChange={update} />
-                    <input name="treatment" placeholder="Treatment" value={form.treatment} onChange={update} />
-                    <input name="coating" placeholder="Coating" value={form.coating} onChange={update} />
+                    <select name="lensType" value={form.lensType} onChange={update}>
+                        <option value="">Select Lens Type</option>
+                        {lenses.map(l => (
+                            <option
+                                key={l._id}
+                                value={`${l.brand} ${l.material} ${l.index} ${l.type}`}
+                            >
+                                {l.brand} — {l.material} — {l.index} — {l.type}
+                            </option>
+                        ))}
+                    </select>
+
+                    <select name="coating" value={form.coating} onChange={update}>
+                        <option value="">Select Coating</option>
+                        {coatings.map(c => (
+                            <option key={c._id} value={c.name}>
+                                {c.name}
+                            </option>
+                        ))}
+                    </select>
+
+                    <input
+                        name="treatment"
+                        placeholder="Treatment Notes"
+                        value={form.treatment}
+                        onChange={update}
+                    />
                 </div>
 
                 <button type="submit" style={{ marginTop: "1.5rem" }}>

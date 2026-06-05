@@ -71,8 +71,8 @@ export default function ViewRx() {
                     <h2>Lens Options</h2>
                     <ul>
                         <li>Lens Type: {rx.lensType}</li>
-                        <li>Treatment: {rx.treatment}</li>
                         <li>Coating: {rx.coating}</li>
+                        <li>Treatment: {rx.treatment}</li>
                     </ul>
 
                     {can(user, "EDIT_RX") && (
