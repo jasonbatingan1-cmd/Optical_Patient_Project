@@ -34,7 +34,6 @@ import userRoutes from "./routes/userRouter.js";
 import patientRoutes from "./routes/patientRouter.js";
 import frameRoutes from "./routes/frameRouter.js";
 import lensRoutes from "./routes/lensRouter.js";
-import treatmentRoutes from "./routes/treatmentRouter.js";
 import coatingRoutes from "./routes/coatRouter.js";
 import rxRoutes from "./routes/rxRouter.js";
 
@@ -52,7 +51,6 @@ if (process.env.NODE_ENV !== "test") {
 app.use("/frames", verifyToken, frameRoutes);
 app.use("/lenses", verifyToken, lensRoutes);
 app.use("/coatings", verifyToken, coatingRoutes);
-app.use("/treatments", verifyToken, treatmentRoutes);
 app.use("/rx", verifyToken, rxRoutes);
 
 export default app;

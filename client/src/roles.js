@@ -17,9 +17,6 @@ export const PERMISSIONS = {
 
     VIEW_LENSES: [ROLE.ADMIN, ROLE.OPTICIAN, ROLE.USER],
     EDIT_LENSES: [ROLE.ADMIN],
-
-    VIEW_TREATMENTS: [ROLE.ADMIN, ROLE.OPTICIAN, ROLE.USER],
-    EDIT_TREATMENTS: [ROLE.ADMIN],
 };
 
 //helper function to check if a user has a specific permission

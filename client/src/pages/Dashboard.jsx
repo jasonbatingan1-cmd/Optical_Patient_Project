@@ -22,10 +22,6 @@ export default function Dashboard() {
                     <li><Link to="/lenses">Lenses</Link></li>
                 )}
 
-                {can(user, "VIEW_TREATMENTS") && (
-                    <li><Link to="/treatments">Treatments</Link></li>
-                )}
-
                 {can(user, "MANAGE_USERS") && (
                     <li><Link to="/admin">Admin Panel</Link></li>
                 )}
