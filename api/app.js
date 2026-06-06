@@ -11,7 +11,7 @@ const app = express();
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://optical-patient-project-1.onrender.com"
+        "https://optical-patient-project.onrender.com"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
