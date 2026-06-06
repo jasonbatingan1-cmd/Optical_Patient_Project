@@ -56,4 +56,9 @@ app.use("/lenses", verifyToken, lensRoutes);
 app.use("/coatings", verifyToken, coatingRoutes);
 app.use("/rx", verifyToken, rxRoutes);
 
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 API running on port ${PORT}`);
+});
+
 export default app;
