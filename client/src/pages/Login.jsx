@@ -7,6 +7,7 @@ export default function LoginPage() {
     const nav = useNavigate();
     const { isAuthenticated } = useAuth();
 
+    // Redirect if already logged in
     if (isAuthenticated) {
         return <Navigate to="/dashboard" replace />;
     }
@@ -22,8 +23,8 @@ export default function LoginPage() {
         try {
             const data = await apiPost("/auth/login", { email, password });
 
-            if (data.error || !data.token) {
-                setError(data.message || "Login failed");
+            if (!data || data.error || !data.token) {
+                setError(data?.message || "Login failed");
                 return;
             }
 
@@ -69,3 +70,46 @@ export default function LoginPage() {
         </div>
     );
 }
+
+const styles = {
+    container: {
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        background: "#f5f5f5"
+    },
+    card: {
+        width: 360,
+        padding: 32,
+        borderRadius: 12,
+        background: "#fff",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
+    },
+    title: {
+        textAlign: "center",
+        marginBottom: 24
+    },
+    input: {
+        width: "100%",
+        padding: 12,
+        marginBottom: 12,
+        borderRadius: 6,
+        border: "1px solid #ccc",
+        fontSize: 16
+    },
+    button: {
+        width: "100%",
+        padding: 12,
+        background: "#1976d2",
+        color: "#fff",
+        border: "none",
+        borderRadius: 6,
+        fontSize: 16,
+        cursor: "pointer"
+    },
+    error: {
+        color: "red",
+        marginBottom: 12
+    }
+};
