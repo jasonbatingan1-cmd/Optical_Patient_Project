@@ -11,12 +11,14 @@ const app = express();
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://optical-patient-project.onrender.com"
+        "https://optical-patient-project-1.onrender.com"   // <-- THIS was missing
     ],
     credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+app.options("*", cors());
 
 app.use(express.json());
 
