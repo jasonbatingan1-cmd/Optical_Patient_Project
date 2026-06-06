@@ -26,6 +26,7 @@ export default function Frames() {
     return (
         <div style={{ padding: "2rem" }}>
             <h1>Frames</h1>
+            <p>Catalog of available frames.</p>
 
             <Grid>
                 <AddCard title="Frame" to="/frames/new" />

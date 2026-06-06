@@ -26,6 +26,7 @@ export default function Lenses() {
     return (
         <div style={{ padding: "2rem" }}>
             <h1>Lenses</h1>
+            <p>Catalog of available lenses.</p>
 
             <Grid>
                 <AddCard title="Lens" to="/lenses/new" />

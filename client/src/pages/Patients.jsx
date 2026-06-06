@@ -26,6 +26,7 @@ export default function Patients() {
     return (
         <div style={{ padding: "2rem" }}>
             <h1>Patients</h1>
+            <p>Click on a patient's name to view their details/prescription.</p>
 
             <Grid>
                 <AddCard title="Patient" to="/patients/new" />

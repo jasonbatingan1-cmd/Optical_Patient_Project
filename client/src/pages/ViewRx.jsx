@@ -51,6 +51,49 @@ export default function ViewRx() {
 
     if (!patient) return <p>Loading...</p>;
 
+    function handlePrint() {
+        window.print();
+    }
+
+    function handleEmail() {
+        const subject = `Prescription for ${patient.firstName} ${patient.lastName}`;
+        const body = `
+Prescription Details:
+
+OD:
+  SPH: ${rx.od_sph}
+  CYL: ${rx.od_cyl}
+  Axis: ${rx.od_axis}
+  Add: ${rx.od_add}
+  Prism H: ${rx.od_prism_h}
+  Prism V: ${rx.od_prism_v}
+
+OS:
+  SPH: ${rx.os_sph}
+  CYL: ${rx.os_cyl}
+  Axis: ${rx.os_axis}
+  Add: ${rx.os_add}
+  Prism H: ${rx.os_prism_h}
+  Prism V: ${rx.os_prism_v}
+
+PD:
+  Single: ${rx.pd_single}
+  OD: ${rx.pd_od}
+  OS: ${rx.pd_os}
+
+Lens:
+  ${lens ? `${lens.brand} – ${lens.material} – ${lens.index} – ${lens.type}` : "None"}
+
+Coating:
+  ${coating ? coating.name : "None"}
+
+Frame:
+  ${frame ? `${frame.brand} – ${frame.model}` : "None"}
+`;
+
+        window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
     return (
         <div style={{ padding: "2rem" }}>
             <button className="btn-outline" onClick={() => nav(`/patients/${id}`)}>
@@ -121,6 +164,16 @@ export default function ViewRx() {
                         {frame ? `${frame.brand} – ${frame.model}` : "None"}
                     </p>
 
+                    <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>
+                        <button className="btn-outline" onClick={handlePrint}>
+                            🖨️ Print
+                        </button>
+
+                        <button className="btn-outline" onClick={handleEmail}>
+                            ✉️ Email
+                        </button>
+                    </div>
+                    
                     <button
                         className="btn-outline"
                         style={{ marginTop: "1.5rem" }}
