@@ -8,6 +8,7 @@ import AddCard from "../components/AddCard";
 export default function Patients() {
     const nav = useNavigate();
     const [patients, setPatients] = useState([]);
+    const [search, setSearch] = useState("");
 
     useEffect(() => {
         load();
@@ -23,15 +24,42 @@ export default function Patients() {
         load();
     }
 
+    // ⭐ Filtered list
+    const filtered = patients.filter(p => {
+        const q = search.toLowerCase();
+        return (
+            p.firstName.toLowerCase().includes(q) ||
+            p.lastName.toLowerCase().includes(q) ||
+            p.phone?.toLowerCase().includes(q) ||
+            p.email?.toLowerCase().includes(q)
+        );
+    });
+
     return (
         <div style={{ padding: "2rem" }}>
             <h1>Patients</h1>
-            <p>Click on a patient's name to view their details/prescription.</p>
+
+            {/* ⭐ Search Bar */}
+            <input
+                type="text"
+                placeholder="Search patients..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{
+                    width: "100%",
+                    padding: "0.75rem 1rem",
+                    borderRadius: "8px",
+                    border: "1px solid #ccc",
+                    marginTop: "1rem",
+                    marginBottom: "1rem",
+                    fontSize: "1rem"
+                }}
+            />
 
             <Grid>
                 <AddCard title="Patient" to="/patients/new" />
 
-                {patients.map(p => (
+                {filtered.map(p => (
                     <Card key={p._id}>
                         <div onClick={() => nav(`/patients/${p._id}`)} style={{ cursor: "pointer" }}>
                             <h2 style={{ margin: 0 }}>
@@ -45,7 +73,6 @@ export default function Patients() {
                             </p>
                         </div>
 
-                        {/* ⭐ Delete button */}
                         <button
                             className="btn-outline"
                             style={{ marginTop: "1rem", color: "red" }}
