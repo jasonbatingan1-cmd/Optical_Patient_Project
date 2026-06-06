@@ -1,5 +1,10 @@
 import { createContext, useContext, useEffect, useState } from "react";
 
+// 🔥 Auto-detect backend URL based on environment
+const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://optical-patient-project.onrender.com";
+
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
@@ -7,31 +12,30 @@ export function AuthProvider({ children }) {
     const [token, setToken] = useState(localStorage.getItem("token"));
     const [loading, setLoading] = useState(true);
 
+    // 🔥 Load user on startup or when token changes
     useEffect(() => {
         async function loadUser() {
-            // No token → no user → stop loading
             if (!token) {
+                setUser(null);
                 setLoading(false);
                 return;
             }
 
             try {
-                const res = await fetch("http://localhost:3000/auth/me", {
-                    headers: { Authorization: `Bearer ${token}` }
+                const res = await fetch(`${API_URL}/auth/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
                 const data = await res.json();
 
-                if (data) {
+                if (res.ok && data) {
                     setUser(data);
                 } else {
-                    // Token invalid or expired
                     localStorage.removeItem("token");
                     setToken(null);
                     setUser(null);
                 }
             } catch (err) {
-                // Network or server error
                 localStorage.removeItem("token");
                 setToken(null);
                 setUser(null);
@@ -43,22 +47,24 @@ export function AuthProvider({ children }) {
         loadUser();
     }, [token]);
 
+    // 🔥 Login function used by Login.jsx
     const login = async (email, password) => {
-        const res = await fetch("http://localhost:3000/auth/login", {
+        const res = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
+            body: JSON.stringify({ email, password }),
         });
 
         const data = await res.json();
 
-        if (!res.ok) throw new Error(data.message);
+        if (!res.ok) throw new Error(data.message || "Login failed");
 
         localStorage.setItem("token", data.token);
         setToken(data.token);
         setUser(data.user);
     };
 
+    // 🔥 Logout
     const logout = () => {
         localStorage.removeItem("token");
         setToken(null);
@@ -73,7 +79,7 @@ export function AuthProvider({ children }) {
                 loading,
                 isAuthenticated: !!user,
                 login,
-                logout
+                logout,
             }}
         >
             {children}

@@ -1,59 +1,45 @@
-export const API_URL =
-    import.meta.env.PROD
-        ? import.meta.env.VITE_API_URL
-        : "http://localhost:3000";
+// api.js — clean, production-ready API helper
 
-export async function apiGet(path) {
-    const token = localStorage.getItem("token");
+// 🔥 Auto-detect backend URL
+const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://optical-patient-project.onrender.com";
 
-    const res = await fetch(API_URL + path, {
-        credentials: "include",
-        headers: {
-            "Authorization": token ? `Bearer ${token}` : ""
-        }
-    });
-    return res.json();
+// 🔥 Helper to get token safely
+function getToken() {
+    return localStorage.getItem("token");
 }
 
-export async function apiPost(path, body) {
-    const token = localStorage.getItem("token");
+// 🔥 Core request wrapper
+async function request(method, path, body) {
+    const token = getToken();
 
-    const res = await fetch(API_URL + path, {
-        method: "POST",
+    const res = await fetch(`${API_URL}${path}`, {
+        method,
         headers: {
             "Content-Type": "application/json",
-            "Authorization": token ? `Bearer ${token}` : ""
+            ...(token ? { Authorization: `Bearer ${token}` } : {})
         },
         credentials: "include",
-        body: JSON.stringify(body)
+        body: body ? JSON.stringify(body) : undefined
     });
-    return res.json();
+
+    let data;
+    try {
+        data = await res.json();
+    } catch {
+        data = null;
+    }
+
+    if (!res.ok) {
+        throw new Error(data?.message || "API request failed");
+    }
+
+    return data;
 }
 
-export async function apiPut(path, body) {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(API_URL + path, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": token ? `Bearer ${token}` : ""
-        },
-        credentials: "include",
-        body: JSON.stringify(body)
-    });
-    return res.json();
-}
-
-export async function apiDelete(path) {
-    const token = localStorage.getItem("token");
-
-    const res = await fetch(API_URL + path, {
-        method: "DELETE",
-        headers: {
-            "Authorization": token ? `Bearer ${token}` : ""
-        },
-        credentials: "include"
-    });
-    return res.json();
-}
+// 🔥 Exported helpers
+export const apiGet = (path) => request("GET", path);
+export const apiPost = (path, body) => request("POST", path, body);
+export const apiPut = (path, body) => request("PUT", path, body);
+export const apiDelete = (path) => request("DELETE", path);

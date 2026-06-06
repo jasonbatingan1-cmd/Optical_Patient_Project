@@ -5,9 +5,8 @@ import { apiPost } from "../api";
 
 export default function LoginPage() {
     const nav = useNavigate();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, login } = useAuth();   // <-- FIXED
 
-    // Redirect if already logged in
     if (isAuthenticated) {
         return <Navigate to="/dashboard" replace />;
     }
@@ -21,55 +20,12 @@ export default function LoginPage() {
         setError("");
 
         try {
-            const data = await apiPost("/auth/login", { email, password });
-
-            if (!data || data.error || !data.token) {
-                setError(data?.message || "Login failed");
-                return;
-            }
-
-            localStorage.setItem("token", data.token);
-
+            await login(email, password);   // <-- correct
             nav("/dashboard");
         } catch (err) {
-            setError("Server error");
+            setError("Invalid email or password");
         }
     };
-
-    return (
-        <div style={styles.container}>
-            <div style={styles.card}>
-                <h2 style={styles.title}>Login</h2>
-
-                <form onSubmit={handleSubmit}>
-                    <input
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        style={styles.input}
-                    />
-
-                    <input
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                        style={styles.input}
-                    />
-
-                    {error && <p style={styles.error}>{error}</p>}
-
-                    <button type="submit" style={styles.button}>
-                        Log In
-                    </button>
-                </form>
-            </div>
-        </div>
-    );
-}
 
 const styles = {
     container: {
