@@ -5,7 +5,7 @@ import { requireRole } from "../middleware/roles.js";
 const router = express.Router();
 
 // CREATE patient
-router.post("/", async (req, res) => {
+router.post("/", requireRole("admin", "optician"), async (req, res) => {
     const patient = await Patient.create(req.body);
     res.json(patient);
 });
