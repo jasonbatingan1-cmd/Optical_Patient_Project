@@ -8,6 +8,7 @@ A full-stack web application designed to manage optical patient information, pre
 
 - Patient information intake (name, contact, medical notes, etc.)
 - Prescription entry (OD/OS sphere, cylinder, axis, add, prism)
+- Print/Email presctiptions
 - Lens selection (material, style, coating, AR options, etc.)
 - Frame selection and inventory linkage
 - Secure authentication + role-based access (admin/optician)
@@ -30,95 +31,82 @@ A full-stack web application designed to manage optical patient information, pre
 
 ```
 project/
-├── config/
-│   ├── db.js
-│   └── passport.js
-│
-├── controllers/
-│   ├── authController.js
-│   ├── userController.js
-│   ├── patientController.js
-│   ├── rxController.js
-│   ├── lensController.js
-│   ├── coatController.js
-│   ├── treatmentController.js
-│   └── frameController.js
-│
-├── middleware/
-│   ├── isLoggedIn.js
-│   ├── isAdmin.js
-│   └── validate.js
-│
-├── models/
-│   ├── User.js
-│   ├── Patient.js
-│   ├── Prescription.js
-│   ├── Lens.js
-│   ├── Coat.js
-│   ├── Treatment.js
-│   └── Frame.js
-│
-├── routes/
-│   ├── authRouter.js
-│   ├── userRouter.js
-│   ├── patientRouter.js
-│   ├── rxRouter.js
-│   ├── lensRouter.js
-│   ├── coatRouter.js
-│   ├── treatmentRouter.js
-│   └── frameRouter.js
-│
-├── views/
-│   ├── auth/
-│   │   ├── login.ejs
-│   │   └── register.ejs
-│   │
-│   ├── users/
-│   │   ├── index.ejs
-│   │   └── edit.ejs
-│   │
-│   ├── patients/
-│   │   ├── index.ejs
-│   │   ├── new.ejs
-│   │   ├── edit.ejs
-│   │   └── show.ejs
-│   │
-│   ├── rx/
-│   │   ├── new.ejs
-│   │   ├── edit.ejs
-│   │   └── show.ejs
-│   │
-│   ├── lens/
-│   ├── coats/
-│   ├── treatments/
-│   ├── frames/
-│   │   └── (same pattern: index/new/edit/show)
-│   │
-│   ├── partials/
-│   │   ├── header.ejs
-│   │   ├── footer.ejs
-│   │   └── nav.ejs
-│   │
-│   └── home.ejs
-│
-├── public/
-│   ├── css/
-│   ├── js/
-│   └── images/
-│
-├── index.js
-└── package.json
+├── README.md
+├── api
+│   ├── app.js
+│   ├── config
+│   │   └── db.js
+│   ├── controllers
+│   │   ├── authController.js
+│   │   ├── coatController.js
+│   │   ├── frameController.js
+│   │   ├── lensController.js
+│   │   ├── patientController.js
+│   │   ├── rxController.js
+│   │   ├── treatmentController.js
+│   │   └── userController.js
+│   ├── middleware
+│   │   ├── auth.js
+│   │   ├── isAdmin.js
+│   │   ├── isLoggedIn.js
+│   │   ├── roles.js
+│   │   └── validate.js
+│   ├── models
+│   │   ├── Coat.js
+│   │   ├── Frame.js
+│   │   ├── Lens.js
+│   │   ├── Patient.js
+│   │   ├── Prescription.js
+│   │   └── User.js
+│   ├── node_modules
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── routes
+│   │   ├── authRouter.js
+│   │   ├── coatRouter.js
+│   │   ├── frameRouter.js
+│   │   ├── lensRouter.js
+│   │   ├── patientRouter.js
+│   │   ├── rxRouter.js
+│   │   └── userRouter.js
+│   └── test
+│       └── patientTest.mjs
+└── client
+    ├── eslint.config.js
+    ├── index.html
+    ├── node_modules
+    ├── package-lock.json
+    ├── package.json
+    ├── public
+    │   ├── favicon.svg
+    │   └── icons.svg
+    ├── src
+    │   ├── App.css
+    │   ├── App.jsx
+    │   ├── api.js
+    │   ├── assets
+    │   ├── components
+    │   ├── context
+    │   ├── index.css
+    │   ├── main.jsx
+    │   ├── pages
+    │   ├── roles.js
+    │   └── styles
+    └── vite.config.js
+
+338 directories, 45 files
 
 ```
 
 ---
+### How to run locally:
 
 ## 📦 Installation
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/optical-app.git
-cd optical-app
+git https://github.com/jasonbatingan1-cmd/Optical_Patient_Project
+cd Optical_Patient_Project
 ```
 
 ## 2. Install server dependencies
@@ -136,7 +124,7 @@ npm install
 
 Create a .env file in /server with:
 ```ini
-PORT=5000
+PORT=3000
 MONGO_URI=your_mongo_connection_string
 JWT_SECRET=your_secret_key
 ```
@@ -158,7 +146,7 @@ The app should now be running at:
 
 Frontend: http://localhost:5173
 
-Backend API: http://localhost:5000
+Backend API: http://localhost:3000
 
 ## 🛣️ Roadmap
 
@@ -173,6 +161,12 @@ Backend API: http://localhost:5000
  Order management dashboard
 
  Deploy (Render/MongoDB Atlas)
+
+## Future additions
+
+Frame images
+
+AI implementation
 
 ## 📬 Contact
 
