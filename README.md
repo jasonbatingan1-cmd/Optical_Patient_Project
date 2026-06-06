@@ -148,6 +148,10 @@ Frontend: http://localhost:5173
 
 Backend API: http://localhost:3000
 
+## Website
+
+View the live app here: https://optical-patient-project-1.onrender.com
+
 ## 🛣️ Roadmap
 
  Build patient CRUD
