@@ -18,9 +18,6 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// Express 5-safe preflight handler
-app.options("(.*)", cors());
-
 app.use(express.json());
 
 // Logger
