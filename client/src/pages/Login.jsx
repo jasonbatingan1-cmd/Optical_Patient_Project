@@ -69,3 +69,4 @@ const styles = {
         marginBottom: 12
     }
 };
+}
