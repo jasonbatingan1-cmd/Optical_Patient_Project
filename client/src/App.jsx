@@ -19,6 +19,7 @@ import AdminPanel from "./pages/AdminPanel.jsx";
 import Patients from "./pages/Patients.jsx";
 import AddPatient from "./pages/AddPatient.jsx";
 import EditPatient from "./pages/EditPatient.jsx";
+import ViewPatient from "./pages/ViewPatient.jsx";
 
 // FRAMES
 import Frames from "./pages/Frames.jsx";
@@ -32,7 +33,8 @@ import EditLens from "./pages/EditLens.jsx";
 
 // RX
 import ViewRx from "./pages/ViewRx.jsx";
-import EnterRx from "./pages/EnterRx.jsx";
+import CreateRx from "./pages/CreateRx.jsx";
+import EditRx from "./pages/EditRx.jsx";
 
 export default function App() {
   return (
@@ -95,6 +97,15 @@ export default function App() {
           }
         />
 
+        <Route
+          path="/patients/:id"
+          element={
+            <ProtectedRoute>
+              <ViewPatient />
+            </ProtectedRoute>
+          }
+        />
+
         {/* FRAMES */}
         <Route
           path="/frames"
@@ -153,18 +164,27 @@ export default function App() {
 
         {/* RX */}
         <Route
-          path="/rx/:id"
+          path="/patients/:id/rx"
           element={
             <ProtectedRoute>
               <ViewRx />
             </ProtectedRoute>
           }
         />
+
         <Route
-          path="/rx/:id/edit"
+          path="/patients/:id/rx/new"
           element={
             <ProtectedRoute>
-              <EnterRx />
+              <CreateRx />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/patients/:id/rx/edit"
+          element={
+            <ProtectedRoute>
+              <EditRx />
             </ProtectedRoute>
           }
         />

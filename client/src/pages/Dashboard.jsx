@@ -1,31 +1,30 @@
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext.jsx";
-import { can } from "../roles.js";
+import Card from "../components/Card";
+import Grid from "../components/Grid";
+import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
-    const { user } = useAuth();
+    const nav = useNavigate();
 
     return (
         <div style={{ padding: "2rem" }}>
             <h1>Dashboard</h1>
-            <p>Welcome, {user?.email}</p>
 
-            <h2>Navigation</h2>
-            <ul style={{ lineHeight: "2rem" }}>
-                <li><Link to="/patients">Patients</Link></li>
+            <Grid>
+                <Card onClick={() => nav("/patients")}>
+                    <h2>Patients</h2>
+                    <p>View and manage patient records</p>
+                </Card>
 
-                {can(user, "VIEW_FRAMES") && (
-                    <li><Link to="/frames">Frames</Link></li>
-                )}
+                <Card onClick={() => nav("/frames")}>
+                    <h2>Frames</h2>
+                    <p>Browse frame inventory</p>
+                </Card>
 
-                {can(user, "VIEW_LENSES") && (
-                    <li><Link to="/lenses">Lenses</Link></li>
-                )}
-
-                {can(user, "MANAGE_USERS") && (
-                    <li><Link to="/admin">Admin Panel</Link></li>
-                )}
-            </ul>
+                <Card onClick={() => nav("/lenses")}>
+                    <h2>Lenses</h2>
+                    <p>Lens catalog and options</p>
+                </Card>
+            </Grid>
         </div>
     );
 }

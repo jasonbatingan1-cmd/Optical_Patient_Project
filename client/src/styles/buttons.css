@@ -1,0 +1,21 @@
+.btn-outline {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    border: 2px solid #1976d2;
+    /* Blue outline */
+    background: white;
+    /* White background */
+    color: #1976d2;
+    /* Blue text */
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-outline:hover {
+    background: #e3f2fd;
+    /* Light blue hover */
+    border-color: #125a9c;
+    /* Darker blue */
+    color: #125a9c;
+}

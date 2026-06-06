@@ -12,15 +12,18 @@ router.get("/:id", async (req, res) => {
     res.json(await Lens.findById(req.params.id));
 });
 
-router.post("/", requireRole("EDIT_RX"), async (req, res) => {
+// ⭐ Allow admin + optician to create lenses
+router.post("/", requireRole("admin", "optician"), async (req, res) => {
     res.json(await Lens.create(req.body));
 });
 
-router.put("/:id", requireRole("EDIT_RX"), async (req, res) => {
+// ⭐ Allow admin + optician to update lenses
+router.put("/:id", requireRole("admin", "optician"), async (req, res) => {
     res.json(await Lens.findByIdAndUpdate(req.params.id, req.body, { new: true }));
 });
 
-router.delete("/:id", requireRole("EDIT_RX"), async (req, res) => {
+// ⭐ Allow admin + optician to delete lenses
+router.delete("/:id", requireRole("admin", "optician"), async (req, res) => {
     await Lens.findByIdAndDelete(req.params.id);
     res.json({ success: true });
 });

@@ -28,6 +28,7 @@ const RxSchema = new mongoose.Schema({
     lensType: String,
     treatment: String,
     coating: String,
+    frame: String,
 
     createdAt: { type: Date, default: Date.now }
 });

@@ -1,65 +1,58 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { apiGet, apiDelete } from "../api";
+import Card from "../components/Card";
+import Grid from "../components/Grid";
+import AddCard from "../components/AddCard";
 
 export default function Frames() {
+    const nav = useNavigate();
     const [frames, setFrames] = useState([]);
 
     useEffect(() => {
-        //define and call load() to avoid React warning about useEffect callback being async
-        async function load() {
-            const data = await apiGet("/frames");
-            setFrames(data);
-        }
         load();
     }, []);
 
-
-    async function loadFrames() {
-        const data = await apiGet("/frames");
-        setFrames(data);
+    async function load() {
+        setFrames(await apiGet("/frames"));
     }
 
     async function handleDelete(id) {
         if (!confirm("Delete this frame?")) return;
         await apiDelete(`/frames/${id}`);
-        loadFrames();
+        load();
     }
 
     return (
         <div style={{ padding: "2rem" }}>
-            <h1>Frames Catalog</h1>
+            <h1>Frames</h1>
 
-            <Link to="/frames/new">➕ Add Frame</Link>
+            <Grid>
+                <AddCard title="Frame" to="/frames/new" />
 
-            <table border="1" cellPadding="8" style={{ marginTop: "20px" }}>
-                <thead>
-                    <tr>
-                        <th>Brand</th>
-                        <th>Model</th>
-                        <th>Color</th>
-                        <th>Size</th>
-                        <th>Price</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+                {frames.map(f => (
+                    <Card key={f._id}>
+                        <div>
+                            <h2 style={{ margin: 0 }}>{f.brand}</h2>
+                            <p style={{ margin: "0.5rem 0", color: "#555" }}>
+                                Model: {f.model}
+                            </p>
+                            <p style={{ margin: 0, color: "#777" }}>
+                                Size: {f.size}
+                            </p>
+                        </div>
 
-                <tbody>
-                    {frames.map((f) => (
-                        <tr key={f._id}>
-                            <td>{f.brand}</td>
-                            <td>{f.model}</td>
-                            <td>{f.color}</td>
-                            <td>{f.size}</td>
-                            <td>${f.price}</td>
-                            <td>
-                                <Link to={`/frames/${f._id}/edit`}>Edit</Link> |{" "}
-                                <button onClick={() => handleDelete(f._id)}>Delete</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                        {/* ⭐ Delete button */}
+                        <button
+                            className="btn-outline"
+                            style={{ marginTop: "1rem", color: "red" }}
+                            onClick={() => handleDelete(f._id)}
+                        >
+                            Delete
+                        </button>
+                    </Card>
+                ))}
+            </Grid>
         </div>
     );
 }

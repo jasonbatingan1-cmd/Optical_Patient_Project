@@ -1,86 +1,134 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { apiGet } from "../api";
-import { useAuth } from "../context/AuthContext.jsx";
-import { can } from "../roles.js";
+import Card from "../components/Card";
+import "../styles/buttons.css";
 
 export default function ViewRx() {
     const { id } = useParams(); // patient ID
     const nav = useNavigate();
-    const { user } = useAuth();
 
     const [patient, setPatient] = useState(null);
     const [rx, setRx] = useState(null);
+    const [lens, setLens] = useState(null);
+    const [coating, setCoating] = useState(null);
+    const [frame, setFrame] = useState(null);
+    const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
-        load();
-    }, []);
+        loadData();
+    }, [id]);
 
-    async function load() {
+    async function loadData() {
+        // Load patient
         const p = await apiGet(`/patients/${id}`);
         setPatient(p);
 
+        // Load Rx
         const r = await apiGet(`/rx/patient/${id}`);
         setRx(r);
+
+        // If Rx exists, load related objects
+        if (r) {
+            if (r.lensType) {
+                const lensObj = await apiGet(`/lenses/${r.lensType}`);
+                setLens(lensObj);
+            }
+
+            if (r.coating) {
+                const coatObj = await apiGet(`/coatings/${r.coating}`);
+                setCoating(coatObj);
+            }
+
+            if (r.frame) {
+                const frameObj = await apiGet(`/frames/${r.frame}`);
+                setFrame(frameObj);
+            }
+        }
+
+        setLoaded(true);
     }
 
     if (!patient) return <p>Loading...</p>;
 
     return (
         <div style={{ padding: "2rem" }}>
-            <button onClick={() => nav("/patients")} style={{ marginBottom: "1rem" }}>
-                ← Back to Patients
+            <button className="btn-outline" onClick={() => nav(`/patients/${id}`)}>
+                ← Back to Patient
             </button>
 
-            <h1>Prescription Details</h1>
+            <h1>Prescription</h1>
             <p>
                 Patient: <strong>{patient.firstName} {patient.lastName}</strong>
             </p>
 
-            {!rx ? (
-                <p>No prescription found for this patient.</p>
-            ) : (
-                <>
+            {/* ⭐ No Rx */}
+            {loaded && !rx && (
+                <Card style={{ marginTop: "1rem", padding: "1.5rem" }}>
+                    <h2>No prescription found</h2>
+                    <p>This patient does not have a prescription yet.</p>
+
+                    <button
+                        className="btn-outline"
+                        style={{ marginTop: "1rem" }}
+                        onClick={() => nav(`/patients/${id}/rx/new`)}
+                    >
+                        Create Prescription
+                    </button>
+                </Card>
+            )}
+
+            {/* ⭐ Rx exists */}
+            {rx && (
+                <Card style={{ marginTop: "1rem", padding: "1.5rem" }}>
                     <h2>Right Eye (OD)</h2>
-                    <ul>
-                        <li>SPH: {rx.od_sph}</li>
-                        <li>CYL: {rx.od_cyl}</li>
-                        <li>Axis: {rx.od_axis}</li>
-                        <li>Add: {rx.od_add}</li>
-                        <li>Prism Horizontal: {rx.od_prism_h}</li>
-                        <li>Prism Vertical: {rx.od_prism_v}</li>
-                    </ul>
+                    <p>SPH: {rx.od_sph}</p>
+                    <p>CYL: {rx.od_cyl}</p>
+                    <p>Axis: {rx.od_axis}</p>
+                    <p>Add: {rx.od_add}</p>
+                    <p>Prism H: {rx.od_prism_h}</p>
+                    <p>Prism V: {rx.od_prism_v}</p>
 
-                    <h2>Left Eye (OS)</h2>
-                    <ul>
-                        <li>SPH: {rx.os_sph}</li>
-                        <li>CYL: {rx.os_cyl}</li>
-                        <li>Axis: {rx.os_axis}</li>
-                        <li>Add: {rx.os_add}</li>
-                        <li>Prism Horizontal: {rx.os_prism_h}</li>
-                        <li>Prism Vertical: {rx.os_prism_v}</li>
-                    </ul>
+                    <h2 style={{ marginTop: "1.5rem" }}>Left Eye (OS)</h2>
+                    <p>SPH: {rx.os_sph}</p>
+                    <p>CYL: {rx.os_cyl}</p>
+                    <p>Axis: {rx.os_axis}</p>
+                    <p>Add: {rx.os_add}</p>
+                    <p>Prism H: {rx.os_prism_h}</p>
+                    <p>Prism V: {rx.os_prism_v}</p>
 
-                    <h2>PD</h2>
-                    <ul>
-                        <li>Single PD: {rx.pd_single}</li>
-                        <li>OD PD: {rx.pd_od}</li>
-                        <li>OS PD: {rx.pd_os}</li>
-                    </ul>
+                    <h2 style={{ marginTop: "1.5rem" }}>PD</h2>
+                    <p>Single: {rx.pd_single}</p>
+                    <p>OD: {rx.pd_od}</p>
+                    <p>OS: {rx.pd_os}</p>
 
-                    <h2>Lens Options</h2>
-                    <ul>
-                        <li>Lens Type: {rx.lensType}</li>
-                        <li>Coating: {rx.coating}</li>
-                        <li>Treatment: {rx.treatment}</li>
-                    </ul>
+                    <h2 style={{ marginTop: "1.5rem" }}>Lens Options</h2>
 
-                    {can(user, "EDIT_RX") && (
-                        <Link to={`/rx/${id}/edit`}>
-                            <button style={{ marginTop: "1rem" }}>Edit Prescription</button>
-                        </Link>
-                    )}
-                </>
+                    <p>
+                        <strong>Lens:</strong>{" "}
+                        {lens
+                            ? `${lens.brand} – ${lens.material} – ${lens.index} – ${lens.type}`
+                            : "None"}
+                    </p>
+
+                    <p>
+                        <strong>Coating:</strong>{" "}
+                        {coating ? coating.name : "None"}
+                    </p>
+
+                    <p>
+                        <strong>Frame:</strong>{" "}
+                        {frame ? `${frame.brand} – ${frame.model}` : "None"}
+                    </p>
+
+                    <button
+                        className="btn-outline"
+                        style={{ marginTop: "1.5rem" }}
+                        onClick={() => nav(`/patients/${id}/rx/edit`)}
+                    >
+                        Update Prescription
+                    </button>
+                </Card>
             )}
         </div>
     );

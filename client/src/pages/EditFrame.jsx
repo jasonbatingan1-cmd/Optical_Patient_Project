@@ -1,71 +1,49 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { apiGet, apiPut } from "../api";
-import { useAuth } from "../context/AuthContext.jsx";
-import { can } from "../roles.js";
+import Card from "../components/Card";
 
 export default function EditFrame() {
     const { id } = useParams();
     const nav = useNavigate();
-    const { user } = useAuth();
-
-    // Role protection
-        if (!can(user, "EDIT_RX")) {
-            return (
-                <div style={{ padding: "2rem" }}>
-                    <h2>🚫 Access Denied</h2>
-                    <p>You do not have permission to enter prescriptions.</p>
-                </div>
-            );
-        }
 
     const [form, setForm] = useState({
         brand: "",
         model: "",
         color: "",
-        size: "",
         price: ""
     });
 
     useEffect(() => {
-        load();
-    }, []);
+        apiGet(`/frames/${id}`).then(data => setForm(data));
+    }, [id]);
 
-    async function load() {
-        const data = await apiGet(`/frames/${id}`);
-        setForm({
-            brand: data?.brand || "",
-            model: data?.model || "",
-            color: data?.color || "",
-            size: data?.size || "",
-            price: data?.price || ""
-        });
-
-    }
-
-    function handleChange(e) {
+    function update(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
+    async function save() {
         await apiPut(`/frames/${id}`, form);
         nav("/frames");
     }
 
     return (
         <div style={{ padding: "2rem" }}>
+            <button onClick={() => nav("/frames")}>← Back</button>
             <h1>Edit Frame</h1>
 
-            <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "400px" }}>
-                <input name="brand" value={form.brand} onChange={handleChange} placeholder="Brand" />
-                <input name="model" value={form.model} onChange={handleChange} placeholder="Model" />
-                <input name="color" value={form.color} onChange={handleChange} placeholder="Color" />
-                <input name="size" value={form.size} onChange={handleChange} placeholder="Size" />
-                <input name="price" value={form.price} onChange={handleChange} placeholder="Price" />
+            <Card>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <input name="brand" value={form.brand} onChange={update} placeholder="Brand" />
+                    <input name="model" value={form.model} onChange={update} placeholder="Model" />
+                    <input name="color" value={form.color} onChange={update} placeholder="Color" />
+                    <input name="price" value={form.price} onChange={update} placeholder="Price" />
+                </div>
 
-                <button type="submit">Save Changes</button>
-            </form>
+                <button onClick={save} style={{ marginTop: "1.5rem" }}>
+                    Save Changes
+                </button>
+            </Card>
         </div>
     );
 }

@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
 });
 
 // UPDATE patient
-router.put("/:id/edit", requireRole("EDIT_RX"), async (req, res) => {
+router.put("/:id", requireRole("admin", "optician"), async (req, res) => {
     const updated = await Patient.findByIdAndUpdate(
         req.params.id,
         req.body,
@@ -27,10 +27,11 @@ router.put("/:id/edit", requireRole("EDIT_RX"), async (req, res) => {
 });
 
 // DELETE patient
-router.delete("/:id", requireRole("EDIT_RX"), async (req, res) => {
+router.delete("/:id", requireRole("admin", "optician"), async (req, res) => {
     await Patient.findByIdAndDelete(req.params.id);
     res.json({ success: true });
 });
+
 
 // GET one patient (MUST BE LAST), otherwise it will conflict with the /:id/edit route
 router.get("/:id", async (req, res) => {

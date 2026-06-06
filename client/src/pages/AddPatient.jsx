@@ -1,56 +1,52 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiPost } from "../api";
-import { useAuth } from "../context/AuthContext.jsx";
-import { can } from "../roles.js";
+import Card from "../components/Card";
+import "../styles/buttons.css";
 
 export default function AddPatient() {
     const nav = useNavigate();
-    const { user } = useAuth();
-
-    // Role protection
-        if (!can(user, "EDIT_RX")) {
-            return (
-                <div style={{ padding: "2rem" }}>
-                    <h2>🚫 Access Denied</h2>
-                    <p>You do not have permission to enter prescriptions.</p>
-                </div>
-            );
-        }
 
     const [form, setForm] = useState({
         firstName: "",
         lastName: "",
         dob: "",
         phone: "",
-        email: ""
+        email: "",
+        notes: ""
     });
 
     function update(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
+    async function save() {
         await apiPost("/patients", form);
         nav("/patients");
     }
 
     return (
         <div style={{ padding: "2rem" }}>
+            <button className="btn-outline" onClick={() => nav("/patients")}>
+                ← Back to Patients
+            </button>
+
             <h1>Add Patient</h1>
 
-            <form onSubmit={handleSubmit}>
-                <input name="firstName" placeholder="First Name" onChange={update} />
-                <input name="lastName" placeholder="Last Name" onChange={update} />
-                <input name="dob" placeholder="DOB" onChange={update} />
-                <input name="phone" placeholder="Phone" onChange={update} />
-                <input name="email" placeholder="Email" onChange={update} />
-
-                <button type="submit" style={{ marginTop: "1rem" }}>
+            <Card style={{ padding: "1.5rem" }}>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <input name="firstName" placeholder="First Name" value={form.firstName} onChange={update} />
+                    <input name="lastName" placeholder="Last Name" value={form.lastName} onChange={update} />
+                    <input name="dob" placeholder="DOB (YYYY-MM-DD)" value={form.dob} onChange={update} />
+                    <input name="phone" placeholder="Phone" value={form.phone} onChange={update} />
+                    <input name="email" placeholder="Email" value={form.email} onChange={update} />
+                    <input name="notes" placeholder="Notes" value={form.notes} onChange={update} />
+                </div>
+                
+                <button className="btn-outline" style={{ marginTop: "1rem" }} onClick={save}>
                     Save Patient
                 </button>
-            </form>
+            </Card>
         </div>
     );
 }

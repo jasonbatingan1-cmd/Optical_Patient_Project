@@ -1,60 +1,51 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { apiGet, apiPut } from "../api";
-import { useAuth } from "../context/AuthContext.jsx";
-import { can } from "../roles.js";
+import Card from "../components/Card";
 
 export default function EditLens() {
     const { id } = useParams();
     const nav = useNavigate();
-    const [form, setForm] = useState(null);    
-    const { user } = useAuth();
-    
-        // Role protection
-        if (!can(user, "EDIT_RX")) {
-            return (
-                <div style={{ padding: "2rem" }}>
-                    <h2>🚫 Access Denied</h2>
-                    <p>You do not have permission to enter prescriptions.</p>
-                </div>
-            );
-        }
-    useEffect(() => {
-        load();
-    }, []);
 
-    async function load() {
-        const data = await apiGet(`/lenses/${id}`);
-        setForm(data);
-    }
+    const [form, setForm] = useState({
+        brand: "",
+        material: "",
+        index: "",
+        type: "",
+        price: ""
+    });
+
+    useEffect(() => {
+        apiGet(`/lenses/${id}`).then(data => setForm(data));
+    }, [id]);
 
     function update(e) {
         setForm({ ...form, [e.target.name]: e.target.value });
     }
 
-    async function handleSubmit(e) {
-        e.preventDefault();
+    async function save() {
         await apiPut(`/lenses/${id}`, form);
         nav("/lenses");
     }
 
-    if (!form) return <p>Loading...</p>;
-
     return (
         <div style={{ padding: "2rem" }}>
+            <button onClick={() => nav("/lenses")}>← Back</button>
             <h1>Edit Lens</h1>
 
-            <form onSubmit={handleSubmit}>
-                <input name="brand" value={form.brand} onChange={update} />
-                <input name="type" value={form.type} onChange={update} />
-                <input name="material" value={form.material} onChange={update} />
-                <input name="index" value={form.index} onChange={update} />
-                <input name="price" value={form.price} onChange={update} />
+            <Card>
+                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+                    <input name="brand" value={form.brand} onChange={update} placeholder="Brand" />
+                    <input name="material" value={form.material} onChange={update} placeholder="Material" />
+                    <input name="index" value={form.index} onChange={update} placeholder="Index" />
+                    <input name="type" value={form.type} onChange={update} placeholder="Type" />
+                    <input name="price" value={form.price} onChange={update} placeholder="Price" />
+                </div>
 
-                <button type="submit" style={{ marginTop: "1rem" }}>
-                    Update Lens
+                <button onClick={save} style={{ marginTop: "1.5rem" }}>
+                    Save Changes
                 </button>
-            </form>
+            </Card>
         </div>
     );
 }
