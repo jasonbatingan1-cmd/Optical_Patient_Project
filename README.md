@@ -148,9 +148,11 @@ Frontend: http://localhost:5173
 
 Backend API: http://localhost:3000
 
-## Website
+## Website/How to log into app
 
 View the live app here: https://optical-patient-project-1.onrender.com
+
+Log in as an admin, optician, or user, using the following emails: admin@example.com; optician@example.com; or user@example.com. All three role types use the same password: yourpassword
 
 ## 🛣️ Roadmap
 
@@ -169,6 +171,8 @@ View the live app here: https://optical-patient-project-1.onrender.com
 ## Future additions
 
 Frame images
+
+Admin Panel - manage users, security/audit logs
 
 AI implementation
 
