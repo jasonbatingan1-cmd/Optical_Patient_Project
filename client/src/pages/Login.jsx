@@ -10,6 +10,7 @@ export default function LoginPage() {
         return <Navigate to="/dashboard" replace />;
     }
 
+    const [loading, setLoading] = useState(false);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
@@ -17,12 +18,15 @@ export default function LoginPage() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError("");
+        setLoading(true);
 
         try {
             await login(email, password);
             nav("/dashboard");
         } catch (err) {
             setError("Invalid email or password");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -52,8 +56,12 @@ export default function LoginPage() {
 
                     {error && <p style={styles.error}>{error}</p>}
 
-                    <button type="submit" style={styles.button}>
-                        Log In
+                    <button 
+                        type="submit" 
+                        style={styles.button}
+                        disabled={loading}
+                    >
+                        {loading ? "Loading..." : "Log In"}
                     </button>
                 </form>
             </div>
